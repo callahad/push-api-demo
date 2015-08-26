@@ -7,6 +7,7 @@ var express = require("express");
 var fs = require("fs");
 var https = require("https");
 var url = require("url");
+var path = require("path");
 
 var app = express();
 
@@ -16,6 +17,16 @@ app.options("/", function(req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin, Access-Control-Allow-Headers");
   res.sendStatus(200);
+});
+
+app.use("/static", express.static("static"));
+
+app.get("/", function(req, res) {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/manifest.json", function(req, res) {
+  res.sendFile(path.join(__dirname, "manifest.json"));
 });
 
 var endpoints = new Set();
