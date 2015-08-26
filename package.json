@@ -1,0 +1,20 @@
+{
+  "name": "push-api-demo",
+  "version": "1.0.0",
+  "description": "Simple chatserver demonstrating the Web Push API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisdavidmills/push-api-demo.git"
+  },
+  "author": "chrisdavidmills <chrisdavidmills@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrisdavidmills/push-api-demo/issues"
+  },
+  "homepage": "https://github.com/chrisdavidmills/push-api-demo#readme"
+}
