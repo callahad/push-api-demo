@@ -20,6 +20,33 @@ app.options("/", function(req, res) {
 
 var endpoints = new Set();
 
+function broadcast(message) {
+  endpoints.forEach(function(endpoint) {
+    var parsed = url.parse(endpoint);
+    var reqOptions = {
+      hostname: parsed.hostname,
+      path: parsed.pathname,
+      method: "PUT",
+      headers: {
+        "Content-Type": "text/plain",
+        "Authorization": "key=AIzaSyBN3u3TLPD-IMVB-GdE798tuinHWdQ3H1Y"
+      }
+    };
+
+    var request = https.request(reqOptions, function(res) {
+      console.log("Response from Push server:");
+      console.log(res);
+    });
+
+    request.write(message);
+    request.end();
+
+    request.on("error", function(e) {
+      console.error(e);
+    });
+  });
+}
+
 app.post("/", bodyParser.text({type: "*/*"}), function(req, res) {
   var bodyParts = req.body.split(",");
   var body = {
@@ -31,68 +58,14 @@ app.post("/", bodyParser.text({type: "*/*"}), function(req, res) {
   if (body.action === "subscribe") {
     console.log("Subscribe: ", body.nickname);
     endpoints.add(body.endpoint);
-    // send request to each push endpoint telling them the new subscriber
-    // has subscribed, along with subscribe token so SW knows how to deal with it.
-    endpoints.forEach(function(endpoint) {
-      var urlParts = url.parse(endpoint);
-      var options = {
-        hostname: urlParts.hostname,
-        path: urlParts.pathname,
-        method: "PUT",
-        headers: {
-          "Content-Type": "plain/text",
-          "Authorization": "key=AIzaSyBN3u3TLPD-IMVB-GdE798tuinHWdQ3H1Y"
-        }
-      };
-
-      var pushRequest = https.request(options, function(pushResponse) {
-        console.log("statusCode: ", pushResponse.statusCode);
-        console.log("headers: ", pushResponse.headers);
-
-        pushResponse.on("data", function(d) {
-          console.log("I got a response");
-        });
-      });
-
-      pushRequest.write(body.nickname);
-      pushRequest.end();
-
-      pushRequest.on("error", function(e) {
-        console.error(e);
-      });
-    });
+    broadcast("New subscriber: " + body.nickname);
   } else if (body.action === "unsubscribe") {
     console.log("Unsubscribe: ", body.nickname);
     endpoints.delete(body.endpoint);
-
-    endpoints.forEach(function(endpoint) {
-      var urlParts = url.parse(endpoint);
-      var options = {
-        hostname: urlParts.hostname,
-        path: urlParts.pathname,
-        method: "PUT",
-        headers: {
-          "Content-Type": "plain/text"
-        }
-      }
-
-      var unsubscribeRequest = https.request(options, function(unsubscribeResponse) {
-        console.log("Unsubscribe statusCode: ", unsubscribeResponse.statusCode);
-        console.log("Unsubscribe headers: ", unsubscribeResponse.headers);
-
-        unsubscribeResponse.on("data", function(d) {
-          console.log("I got an unsubscribe response");
-        });
-      });
-
-      unsubscribeRequest.write(body.nickname);
-      unsubscribeRequest.end();
-
-      unsubscribeRequest.on("error", function(e) {
-        console.error(e);
-      });
-    });
+    broadcast("Lost subscriber: " + body.nickname);
   }
+
+  res.sendStatus(200);
 });
 
 var options = {
