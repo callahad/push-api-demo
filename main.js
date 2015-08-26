@@ -221,7 +221,7 @@ function updateStatus(endpoint,statusType) {
                          endpoint
                        ]
     console.log(subscribeObj);
-    request.send(subscribeObj);
+    request.send(JSON.stringify(subscribeObj));
 
     // sendBtn.addEventListener('click',function() {
 
@@ -241,7 +241,7 @@ function updateStatus(endpoint,statusType) {
                          endpoint
                        ]
     console.log(subscribeObj);
-    request.send(subscribeObj);
+    request.send(JSON.stringify(subscribeObj));
 
   } else if(statusType === 'init') {
     sendBtn = document.createElement('button');
