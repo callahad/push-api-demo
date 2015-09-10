@@ -1,0 +1,31 @@
+{
+    "extends": "eslint:recommended",
+    "rules": {
+        "no-unused-vars": 1,
+        "complexity": [2, 6],
+        "curly": 2,
+        "default-case": 2,
+        "eqeqeq": 2,
+        "no-eval": 2,
+        "no-extend-native": 2,
+        "no-implied-eval": 2,
+        "no-native-reassign": 2,
+        "no-warning-comments": 1,
+        "strict": [2, "global"],
+        "no-shadow": 2,
+        "no-use-before-define": [2, "nofunc"],
+        "no-path-concat": 2,
+        "brace-style": [2, "1tbs", { "allowSingleLine": true }],
+        "eol-last": 2,
+        "indent": [2, 2, {"SwitchCase": 1}],
+        "no-nested-ternary": 2,
+        "no-trailing-spaces": 2,
+        "no-unneeded-ternary": 2,
+        "one-var": [2, "never"],
+        "semi": [2, "always"],
+        "quotes": [2, "double", "avoid-escape"],
+        "arrow-parens": [2, "always"],
+        "space-after-keywords": 2,
+        "arrow-spacing": 2
+    }
+}

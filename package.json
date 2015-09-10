@@ -1,6 +1,6 @@
 {
   "name": "push-api-demo",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Simple chatserver demonstrating the Web Push API",
   "main": "server.js",
   "scripts": {
