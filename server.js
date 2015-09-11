@@ -7,7 +7,6 @@
 var bodyParser = require("body-parser");
 var express = require("express");
 var fs = require("fs");
-var http = require("http");
 var https = require("https");
 var url = require("url");
 var path = require("path");
@@ -26,5 +25,18 @@ app.get("/", function(req, res) {
 
 // Server
 
-http.createServer(app).listen(7000);
-console.log("Server listening on http://127.0.0.1:7000");
+var serverOptions;
+try {
+  serverOptions = {
+    key: fs.readFileSync(path.join(__dirname, "tls", "generated-key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "tls", "generated-cert.pem"))
+  };
+} catch (_) {
+  serverOptions = {
+    key: fs.readFileSync(path.join(__dirname, "tls", "bundled-key.pem")),
+    cert: fs.readFileSync(path.join(__dirname, "tls", "bundled-cert.pem"))
+  };
+}
+
+https.createServer(serverOptions, app).listen(7000);
+console.log("Server listening securely on https://localhost:7000");

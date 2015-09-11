@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "tls/genkeys.js",
     "start": "node server.js"
   },
   "repository": {
@@ -19,6 +20,7 @@
   "homepage": "https://github.com/chrisdavidmills/push-api-demo#readme",
   "dependencies": {
     "body-parser": "^1.13.3",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "pem": "^1.8.0"
   }
 }
