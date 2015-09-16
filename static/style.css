@@ -1,3 +1,15 @@
 html {
   font-family: sans-serif;
 }
+
+.status {
+  color: gray;
+}
+
+.status[data-disposition="true"] {
+  color: green;
+}
+
+.status[data-disposition="false"] {
+  color: red;
+}

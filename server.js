@@ -21,7 +21,36 @@ app.get("/", function(req, res) {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get("/serviceworker.js", function(req, res) {
+  res.sendFile(path.join(__dirname, "static", "serviceworker.js"));
+});
+
 // Backend
+
+// TODO: Persist this
+var endpoints = {};
+
+app.put("/", bodyParser.json(), function(req, res) {
+  if (!req.body.user || !req.body.endpoint) {
+    res.sendStatus(400);
+    return;
+  }
+
+  endpoints[req.body.user] = req.body.endpoint;
+  console.log(endpoints);
+  res.sendStatus(204);
+});
+
+app.delete("/", bodyParser.json(), function(req, res) {
+  if (!req.body.user) {
+    res.sendStatus(400);
+    return;
+  }
+
+  delete endpoints[req.body.user];
+  console.log(endpoints);
+  res.sendStatus(204);
+});
 
 // Server
 
