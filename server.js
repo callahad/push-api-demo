@@ -53,19 +53,5 @@ app.delete("/", bodyParser.json(), function(req, res) {
 });
 
 // Server
-
-var serverOptions;
-try {
-  serverOptions = {
-    key: fs.readFileSync(path.join(__dirname, "tls", "generated-key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "tls", "generated-cert.pem"))
-  };
-} catch (_) {
-  serverOptions = {
-    key: fs.readFileSync(path.join(__dirname, "tls", "bundled-key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "tls", "bundled-cert.pem"))
-  };
-}
-
-https.createServer(serverOptions, app).listen(7000);
-console.log("Server listening securely on https://localhost:7000");
+app.listen(7000);
+console.log("Server listening on http://localhost:7000");
