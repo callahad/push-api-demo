@@ -46,12 +46,44 @@ ui.pushPrompt = function(opts) {
 
 // App Logic
 
+function getUUID() {
+  function generateUUID() {
+    // See RFC 4122
+    var buf = new Uint8Array(16);
+    crypto.getRandomValues(buf);
+    buf[6] = buf[6] & 0x0f | 0x40;
+    buf[8] = buf[8] & 0x3f | 0x80;
+
+    var hex = Array.prototype.map.call(buf, function(x) {
+      return (0x100 + x).toString(16).slice(1);
+    });
+
+    var result = [];
+    hex.forEach(function(x, i) {
+      if ( i === 4 || i === 6 || i === 8 || i === 10 ) { result.push("-"); }
+      result.push(x);
+    });
+
+    return result.join("");
+  }
+
+  var key = "push-demo-uuid";
+  var uuid = localStorage.getItem(key);
+  if (!uuid) {
+    uuid = generateUUID();
+    localStorage.setItem(key, uuid);
+  }
+
+  return uuid;
+}
+
 function verifySupport() {
   function assert(prop, message) {
     if (!prop) { throw new Error(message); }
     return true;
   }
 
+  assert(self.crypto.getRandomValues, "crypto.getRandomValues() is not supported");
   assert(self.fetch, "Fetch is not supported");
   assert(navigator.serviceWorker, "Service Worker is not supported");
   assert(self.ServiceWorkerRegistration.prototype.showNotification, "ServiceWorker Notifications are not supported");
@@ -107,7 +139,7 @@ function subscribe() {
         mode: "same-origin",
         method: "PUT",
         headers: new Headers({ "Content-Type": "application/json" }),
-        body: JSON.stringify({ user: "FIXME", endpoint: sub.endpoint }) // TODO: Generate unique ID
+        body: JSON.stringify({ user: getUUID(), endpoint: sub.endpoint })
       });
     });
 }
