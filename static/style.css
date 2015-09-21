@@ -2,14 +2,10 @@ html {
   font-family: sans-serif;
 }
 
-.status {
-  color: gray;
+.hidden {
+  display: none;
 }
 
-.status[data-disposition="true"] {
-  color: green;
-}
-
-.status[data-disposition="false"] {
+li.error {
   color: red;
 }

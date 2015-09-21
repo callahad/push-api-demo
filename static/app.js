@@ -7,30 +7,75 @@
 
 var ui = {};
 
-ui.notificationPrompt = function() {
+ui.showNotification = function(fn) {
   return new Promise(function(resolve, reject) {
     console.debug("Displaying notification UI");
-    Notification.requestPermission(function(permission) {
-      console.debug("Hiding notification UI");
-      return resolve(permission);
+
+    var old = document.getElementById("notification-prompt-btn");
+    if (old) { old.remove(); }
+
+    var btn = document.createElement("button");
+    btn.id = "notification-prompt-btn";
+    btn.textContent = "Enable Notifications";
+    btn.addEventListener("click", function() {
+      fn().then(resolve, reject);
     });
+
+    var parent = document.getElementById("notification-prompt");
+    parent.appendChild(btn);
+    parent.classList.remove("hidden");
   });
+};
+
+ui.hideNotification = function() {
+  console.debug("Hiding notification UI");
+  document.getElementById("notification-prompt").classList.add("hidden");
+};
+
+ui.notificationPrompt = function() {
+  return new Promise(function(resolve, reject) {
+    ui.showNotification(Notification.requestPermission.bind(Notification, function(permission) {
+      resolve(permission);
+    }));
+  })
+  .then(ui.hideNotification);
+};
+
+ui.showPush = function(fn) {
+  return new Promise(function(resolve, reject) {
+    console.debug("Displaying push UI");
+
+    var old = document.getElementById("push-prompt-btn");
+    if (old) { old.remove(); }
+
+    var btn = document.createElement("button");
+    btn.id = "push-prompt-btn";
+    btn.textContent = "Enable Push";
+    btn.addEventListener("click", function() {
+      fn().then(resolve, reject);
+    });
+
+    var parent = document.getElementById("push-prompt");
+    parent.appendChild(btn);
+    parent.classList.remove("hidden");
+  });
+};
+
+ui.hidePush = function() {
+  console.debug("Hiding push UI");
+  document.getElementById("push-prompt").classList.add("hidden");
 };
 
 ui.pushPrompt = function(opts) {
   return navigator.serviceWorker.ready
     .then(function(reg) {
-      console.debug("Displaying push UI");
-      return reg;
+      return ui.showPush(reg.pushManager.subscribe.bind(reg.pushManager, opts));
     })
-    .then(function(reg) {
-      return Promise.all([reg, reg.pushManager.subscribe(opts)]);
-    })
-    .then(function(results) {
-      console.debug("Hiding push UI on success");
+    .then(function() {
+      ui.hidePush();
     })
     .catch(function(err) {
-      console.debug("Hiding push UI on error");
+      ui.hidePush();
 
       // Bug 1206302: Firefox rejects with a string instead of DOMException
       var DENIED = "PermissionDeniedError";
@@ -42,6 +87,27 @@ ui.pushPrompt = function(opts) {
       // e.g., Chrome currently throws if the app isn't registered in GCM
       throw err;
     });
+};
+
+ui.log = function(message) {
+  var elem = document.createElement("li");
+  elem.textContent = message;
+  document.getElementById("log").appendChild(elem);
+  console.info(message);
+};
+
+ui.applyLog = function(message) {
+  return ui.log.bind(null, message);
+};
+
+ui.error = function(err) {
+  var message = err.message || err;
+
+  var elem = document.createElement("li");
+  elem.textContent = message;
+  elem.classList.add("error");
+  document.getElementById("log").appendChild(elem);
+  console.error(message);
 };
 
 // App Logic
@@ -135,7 +201,7 @@ function subscribe() {
       return reg.pushManager.subscribe();
     })
     .then(function(sub) {
-      return fetch(window.location.origin, {
+      return fetch(window.location.origin + "/notifications", {
         mode: "same-origin",
         method: "PUT",
         headers: new Headers({ "Content-Type": "application/json" }),
@@ -146,18 +212,18 @@ function subscribe() {
 
 Promise.resolve()
   .then(verifySupport)
-  .then(function() { console.info("Browser support OK"); })
+  .then(ui.applyLog("Browser support OK"))
 
   .then(function() { return navigator.serviceWorker.register("./serviceworker.js"); })
-  .then(function() { console.info("ServiceWorker installation OK"); })
+  .then(ui.applyLog("ServiceWorker installation OK"))
 
   .then(function() { return enableNotifications(ui.notificationPrompt); })
-  .then(function() { console.info("Notifications OK"); })
+  .then(ui.applyLog("Notifications OK"))
 
   .then(function() { return enablePush(ui.pushPrompt); })
-  .then(function() { console.info("Push OK"); })
+  .then(ui.applyLog("Push OK"))
 
   .then(subscribe)
-  .then(function() { console.info("Subscribed OK"); })
+  .then(ui.applyLog("Subscribed OK"))
 
-  .catch(function(err) { console.error(err.message || err); });
+  .catch(ui.error);
