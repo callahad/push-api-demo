@@ -15,7 +15,6 @@ At the moment this demo only works on [Firefox Nightly](https://nightly.mozilla.
 
 Still to do:
 
-* Setting up the Google Cloud Messaging service properly so the example will work in Chrome as well.
 * Setting up functionality to allow subscribed users to send messages to the chatroom that will be seen by all subscribed users.
 * Hosting the server somewhere on t'internet so it can be accessed by multiple users (a chatroom is pretty useless with only one user!)
 * Fixing the service worker so that the data sent in the push messages is read and used (Firefox currently doesn't support the `PushMessageData methods`, see [Bug 1149195](https://bugzilla.mozilla.org/show_bug.cgi?id=1149195) — this is the most serious blocker for now.)
