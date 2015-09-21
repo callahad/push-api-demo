@@ -51,6 +51,7 @@ app.delete("/notifications", bodyParser.json(), function(req, res) {
 });
 
 app.post("/notifications", function(req, res) {
+  res.sendStatus(204);
   endpoints.forEach(function(endpoint, uuid, map) {
     request.post(endpoint, function(error, response, body) {
       if (response.statusCode >= 400 && response.statusCode <= 499) {

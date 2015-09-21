@@ -7,6 +7,10 @@
 
 var ui = {};
 
+ui.updateDisplayOrigin = function() {
+  document.getElementById("origin").textContent = window.location.origin;
+};
+
 ui.showNotification = function(fn) {
   return new Promise(function(resolve, reject) {
     console.debug("Displaying notification UI");
@@ -210,6 +214,10 @@ function subscribe() {
     });
 }
 
+// Run it
+
+ui.updateDisplayOrigin();
+
 Promise.resolve()
   .then(verifySupport)
   .then(ui.applyLog("Browser support OK"))
@@ -226,4 +234,5 @@ Promise.resolve()
   .then(subscribe)
   .then(ui.applyLog("Subscribed OK"))
 
+  .then(ui.applyLog("DONE - Ready to receive Push Notifications"))
   .catch(ui.error);

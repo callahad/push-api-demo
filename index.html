@@ -13,15 +13,20 @@
   <body>
     <h1>Push API Demo</h1>
 
+    <code><pre>// To notify all subscribed clients:<br><br>curl -X POST <span id="origin">http://localhost:7000</span>/notifications</pre></code>
+
+    <h2>Push Status</h2>
+
     <ul id="log">
     </ul>
 
-    <div id="notification-prompt" class="hidden">
+    <div id="notification-prompt" class="hidden prompt">
       <p>Please enable notifications.</p>
     </div>
 
-    <div id="push-prompt" class="hidden">
+    <div id="push-prompt" class="hidden prompt">
       <p>Please enable push.</p>
     </div>
+
   </body>
 </html>
