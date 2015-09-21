@@ -19,6 +19,7 @@
   "homepage": "https://github.com/chrisdavidmills/push-api-demo#readme",
   "dependencies": {
     "body-parser": "^1.13.3",
-    "express": "^4.13.3"
+    "express": "^4.13.3",
+    "request": "^2.62.0"
   }
 }
