@@ -23,6 +23,7 @@ app.get("/serviceworker.js", function(req, res) {
   res.sendFile(path.join(__dirname, "static", "serviceworker.js"));
 });
 
+// Temporarily required for Google Chrome
 app.get("/manifest.json", function(req, res) {
   res.sendFile(path.join(__dirname, "manifest.json"));
 });
@@ -57,31 +58,43 @@ app.delete("/notifications", bodyParser.json(), function(req, res) {
 app.post("/notifications", function(req, res) {
   res.sendStatus(204);
 
+  // Temporarily required for Google Chrome
+  function gcmSend(endpoint, uuid, map) {
+    var clientId = endpoint.split("/").pop();
+    var options = {
+      url: "https://android.googleapis.com/gcm/send",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "key=AIzaSyDTw1wXwKTX3DYZCMgEh4VLtomEboqrdgY"
+      },
+      body: JSON.stringify({ registration_ids: [ clientId ] })
+    };
+
+    request.post(options, function(err, response, body) {
+      if (body.failure || (response.statusCode >= 400 && response.statusCode <= 499)) {
+        console.error("FAILURE:", body);
+        map.delete(uuid);
+        return;
+      }
+      console.log("SUCCESS:", body);
+    });
+  }
+
+  function standardSend(endpoint, uuid, map) {
+    request.post(endpoint, function(err, response, body) {
+      if ((response.statusCode >= 400 && response.statusCode <= 499)) {
+        console.error("FAILURE:", body);
+        map.delete(uuid);
+        return;
+      }
+      console.log("SUCCESS:", body);
+    });
+  }
+
   endpoints.forEach(function(endpoint, uuid, map) {
-    if (endpoint.indexOf("https://android.googleapis.com/gcm/send") === 0) {
-      request.post({
-        url: "https://android.googleapis.com/gcm/send",
-        headers: { "Authorization": "key=AIzaSyDTw1wXwKTX3DYZCMgEh4VLtomEboqrdgY" },
-        json: true,
-        body: {registration_ids: [ endpoint.split("/").pop() ]}
-      }, function(err, response, body) {
-        if (body.failure || (response.statusCode >= 400 && response.statusCode <= 499)) {
-          console.error("FAILURE:", body, endpoint);
-          map.delete(uuid);
-          return;
-        }
-        console.log("SUCCESS:", body, endpoint);
-      });
-    } else {
-      request.post(endpoint, function(error, response, body) {
-        if (response.statusCode >= 400 && response.statusCode <= 499) {
-          console.error("FAILURE:", body, endpoint);
-          map.delete(uuid);
-          return;
-        }
-        console.log("SUCCESS:", body, endpoint);
-      });
-    }
+    var isChrome = endpoint.indexOf("https://android.googleapis.com/gcm/send") === 0;
+    var sendFn = isChrome ? gcmSend : standardSend;
+    sendFn(endpoint, uuid, map);
   });
 });
 
