@@ -23,6 +23,10 @@ app.get("/serviceworker.js", function(req, res) {
   res.sendFile(path.join(__dirname, "static", "serviceworker.js"));
 });
 
+app.get("/manifest.json", function(req, res) {
+  res.sendFile(path.join(__dirname, "manifest.json"));
+});
+
 // Backend
 
 // TODO: Persist this
@@ -52,15 +56,32 @@ app.delete("/notifications", bodyParser.json(), function(req, res) {
 
 app.post("/notifications", function(req, res) {
   res.sendStatus(204);
+
   endpoints.forEach(function(endpoint, uuid, map) {
-    request.post(endpoint, function(error, response, body) {
-      if (response.statusCode >= 400 && response.statusCode <= 499) {
-        console.error("FAILURE:", body, endpoint);
-        map.delete(uuid);
-        return;
-      }
-      console.log("SUCCESS:", body, endpoint);
-    });
+    if (endpoint.indexOf("https://android.googleapis.com/gcm/send") === 0) {
+      request.post({
+        url: "https://android.googleapis.com/gcm/send",
+        headers: { "Authorization": "key=AIzaSyDTw1wXwKTX3DYZCMgEh4VLtomEboqrdgY" },
+        json: true,
+        body: {registration_ids: [ endpoint.split("/").pop() ]}
+      }, function(err, response, body) {
+        if (body.failure || (response.statusCode >= 400 && response.statusCode <= 499)) {
+          console.error("FAILURE:", body, endpoint);
+          map.delete(uuid);
+          return;
+        }
+        console.log("SUCCESS:", body, endpoint);
+      });
+    } else {
+      request.post(endpoint, function(error, response, body) {
+        if (response.statusCode >= 400 && response.statusCode <= 499) {
+          console.error("FAILURE:", body, endpoint);
+          map.delete(uuid);
+          return;
+        }
+        console.log("SUCCESS:", body, endpoint);
+      });
+    }
   });
 });
 

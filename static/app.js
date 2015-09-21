@@ -202,7 +202,7 @@ function enablePush(promptFn, permission) {
 function subscribe() {
   return navigator.serviceWorker.ready
     .then(function(reg) {
-      return reg.pushManager.subscribe();
+      return reg.pushManager.subscribe({userVisibleOnly: true});
     })
     .then(function(sub) {
       return fetch(window.location.origin + "/notifications", {

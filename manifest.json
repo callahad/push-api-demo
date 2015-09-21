@@ -1,0 +1,12 @@
+{
+  "name": "Push API Demo",
+  "short_name": "Push API Demo",
+  "icons": [{
+    "src": "static/icon.png",
+    "sizes": "111x111",
+    "type": "image/png"
+  }],
+  "start_url": "/",
+  "display": "standalone",
+  "gcm_sender_id": "347701179665"
+}
