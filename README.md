@@ -1,6 +1,6 @@
 # push-api-demo
 
-This is an attempt to create a simple chatroom example to demonstrate the [Push API][mdn-push]. It also illustrates some uses of [Service Workers][mdn-serviceworkers].
+This is an attempt to create a simple example to demonstrate the [Push API][mdn-push]. It also illustrates some uses of [Service Workers][mdn-serviceworkers].
 
 ## Supported Browsers
 
